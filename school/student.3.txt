@@ -1,0 +1,454 @@
+package school;
+
+import java.io.*;
+import java.util.Scanner;
+
+public class Student {
+    public static void rush() {
+        control();
+
+        String security = security();
+
+        if (security.equals("f"))
+            System.exit(0);
+
+       while (true) {
+           switch (rank(security)) {
+               case "Yönetici":
+                   admin_menu();
+
+               default:
+                   admin_menu();
+           }
+       }
+    }
+
+    private static boolean student_errolment() {
+        Scanner scan = new Scanner(System.in);
+
+        System.out.println("-----------------------");
+        System.out.print("Öğrenci isim: ");
+        String name = scan.nextLine();
+        System.out.print("Öğrenci soyadı: ");
+        String surname = scan.nextLine();
+        System.out.print("Öğrenci sınıf:");
+        String grade = scan.nextLine();
+        System.out.print("Öğrenci şube:");
+        String branch = scan.nextLine();
+
+        File grade_branch = new File("C:\\School\\Grades\\" + grade + "\\" + branch.toUpperCase());
+        if (!grade_branch.exists()) {
+            System.out.println("-----------------------");
+            System.out.println("Böyle bir sınıf bulunmamakta.");
+            return false;
+        }
+
+        System.out.print("Öğrenci okul numarası: ");
+        String student_number = scan.nextLine();
+
+        File student_dir = new File("C:\\School\\Grades\\" + grade + "\\" + branch.toUpperCase() + "\\" + student_number);
+        if (student_dir.exists()) {
+            System.out.println("-----------------------");
+            System.out.println("Böyle bir okul numarasına sahip öğrenci zaten var.");
+            return false;
+        }
+
+        System.out.print("Öğrenci telefon numarası: ");
+        String phone_number = scan.nextLine();
+        System.out.print("Öğrenci ikametgah adresi: ");
+        String address = scan.nextLine();
+
+        File student = new File("C:\\School\\Grades\\" + grade + "\\" + branch.toUpperCase() + "\\" + student_number + "\\StudentInfos.txt");
+        File mark = new File("C:\\School\\Grades\\" + grade + "\\" + branch.toUpperCase() + "\\" + student_number + "\\mark.txt");
+
+        try {
+            student_dir.mkdir();
+            student.createNewFile();
+            mark.createNewFile();
+
+            FileWriter fileWriter = new FileWriter(student);
+            FileWriter m_fileWriter = new FileWriter(mark);
+
+            fileWriter.write("İsim: " + name + "\n" +
+                    "Soyad: " + surname + "\n" +
+                    "Öğrenci numarası: " + student_number + "\n" +
+                    "Sınıf: " + grade + "\n" +
+                    "Şube: " + branch.toUpperCase() + "\n" +
+                    "Telefon numarası: " + phone_number + "\n" +
+                    "Adres: " + address);
+            fileWriter.close();
+
+            m_fileWriter.write("İsim: " + name + "\n" +
+                    "Soyad: " + surname + "\n" +
+                    "Öğrenci numarası: " + student_number + "\n" +
+                    "Sınıf: " + grade + "\n" +
+                    "Şube: " + branch.toUpperCase() + "\n" +
+                    "Lesson: \n" +
+                    "Exam Mark: ");
+            m_fileWriter.close();
+        }
+        catch (IOException ex) {
+            ex.getMessage();
+        }
+        return true;
+    }
+
+    private static boolean show_the_students_informations() {
+        Scanner scan = new Scanner(System.in);
+
+        System.out.println("-----------------------");
+        System.out.print("Görüntülemek istediğiniz öğrencinin sınıfı:");
+        String grade = scan.nextLine();
+        System.out.print("Görüntülemek istediğiniz öğrencinin şubesi:");
+        String branch = scan.nextLine();
+
+        File grade_branch = new File("C:\\School\\Grades\\" + grade + "\\" + branch.toUpperCase());
+        if (!grade_branch.exists()) {
+            System.out.println("-----------------------");
+            System.out.println("Böyle bir sınıf bulunmamakta.");
+            return false;
+        }
+        
+        System.out.print("Görüntülemek istediğiniz öğrencinin okul numarasını giriniz: ");
+        String student_number = scan.nextLine();
+
+        File file = new File("C:\\School\\Grades\\" + grade + "\\" + branch.toUpperCase() + "\\" + student_number + "\\" + "StudentInfos.txt");
+
+        if (!file.exists()) {
+            System.out.println("-----------------------");
+            System.out.println("Böyle bir öğrenci bulunmamakta.");
+            return false;
+        }
+
+        char[] chars = new char[(int) file.length()];
+
+        try {
+            FileReader fileReader = new FileReader(file);
+            fileReader.read(chars);
+            System.out.println("-----------------------");
+            String str = new String(chars);
+            System.out.println(str);
+        } catch (IOException ex) {
+            ex.getMessage();
+        }
+        return true;
+    }
+
+    private static void control() {
+        File school_dir = new File("C:\\School");
+        if (!school_dir.exists()) {
+            school_dir.mkdir();
+        }
+
+        File grades_dir = new File("C:\\School\\Grades");
+        if (!grades_dir.exists()) {
+            grades_dir.mkdir();
+        }
+
+        File users_dir = new File("C:\\School\\Users");
+        if (!users_dir.exists()) {
+            users_dir.mkdir();
+        }
+
+        File admin_file = new File("C:\\School\\Users\\Admin_1234.txt");
+        if (!admin_file.exists()) {
+            try {
+                admin_file.createNewFile();
+                FileWriter fileWriter = new FileWriter(admin_file);
+                fileWriter.write("İsim: Admin\n" +
+                                     "Kullanıcı numarası: 1234\n" +
+                                     "Alan: Yönetici");
+                fileWriter.close();
+            }
+            catch (IOException ex) {
+                ex.getMessage();
+            }
+        }
+    }
+
+    private static String security()
+    {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Merhaba!");
+
+        int i = 0;
+
+        while (i < 3){
+            System.out.println("-----------------------");
+            System.out.print("Kullanıcı adı: ");
+            String username = scan.nextLine();
+            System.out.print("Kullanıcı numaranızı giriniz: ");
+            String user_no = scan.nextLine();
+
+            File f = new File("C:\\School\\Users\\" + username + "_" + user_no + ".txt");
+
+            if (f.exists()) {
+                System.out.println("-----------------------");
+                System.out.println("Hoşgeldin, " + username + ".");
+                return username + "_" + user_no;
+            }
+
+            System.out.println("-----------------------");
+            System.out.println("Yanlış kullanıcıadı veya kullanıcı numarası.");
+            ++i;
+        }
+
+        if (i == 3) {
+            return "f";
+        }
+
+        return "t";
+    }
+
+    private static String rank(String addres)
+    {
+        String [] teachers = {"Yönetici", "Türk Dili Ve Edebiyatı", "Din Kültürü Ve Ahlak Bilgisi", "T.C. İnkılap Ve Atatürkçülük", "Tarih", "Coğrafya", "Matematik", "Fizik", "Kimya", "Biyoloji", "Felsefe", "Beden Eğitimi Ve Spor", "Görsel Sanatlar Ve Müzik", "Sağlık Bilgisi Ve Trafik Kültürü", "Birinci Yabancı Dil", "İkinci Yabancı Dil"};
+
+        try {
+            File file = new File("C:\\School\\Users\\" + addres + ".txt");
+            FileReader fileReader = new FileReader(file);
+            char [] chars = new char[(int) file.length()];
+            fileReader.read(chars);
+            String str = new String(chars);
+
+            for (int j = 0; j < teachers.length; ++j) {
+                if (str.contains(teachers[j])) {
+                    if (j == 0)
+                        System.out.println("Rütbe: " + teachers[j]);
+                    else
+                        System.out.println("Rütbe: " + teachers[j] + " Öğretmeni");
+
+                    return teachers[j];
+                }
+            }
+        }
+        catch (IOException ex) {
+            ex.getMessage();
+        }
+
+        return "f";
+    }
+
+    private static void admin_menu()
+    {
+        Scanner scan = new Scanner(System.in);
+
+        int ans = 0;
+
+        while (true) {
+            System.out.println("-----------------------");
+            System.out.print("Öğrenci kayıt işlemi için 1: \n" +
+                    "Öğrenci görüntülemek için 2: \n" +
+                    "Kullanıcı oluşturmak için için 3: \n" +
+                    "Kullanıcı görüntülemek için için 4: \n" +
+                    "Sınıf oluşturmak için 5: \n" +
+                    "Sınıf görüntülemek için 6: \n" +
+                    "Programdan çıkmak için 0: ");
+            ans = scan.nextInt();
+
+            if (ans == 0) {
+                System.exit(0);
+            }
+
+            switch (ans) {
+                case 1:
+                    student_errolment();
+                    break;
+
+                case 2:
+                    show_the_students_informations();
+                    break;
+
+                case 3:
+                    create_user();
+                    break;
+
+                case 4:
+                    show_user();
+                    break;
+
+                case 5:
+                    create_class();
+                    break;
+
+                case 6:
+                    show_class();
+            }
+        }
+    }
+
+    private static boolean create_class()
+    {
+        Scanner scan = new Scanner(System.in);
+
+        System.out.println("-----------------------");
+        System.out.print("Oluşturmak istediğiniz sınıf: ");
+        String grade = scan.nextLine();
+        System.out.print("Oluşturmak istediğiniz sınıfın şubesi: ");
+        String branch = scan.nextLine();
+
+        File grade_dir_control = new File("C:\\School\\Grades\\" + grade);
+        File grade_branch = new File("C:\\School\\Grades\\" + grade + "\\" + branch.toUpperCase());
+
+        if (!grade_dir_control.exists()) {
+            grade_dir_control.mkdir();
+        }
+
+        if (grade_branch.exists()) {
+            System.out.println("-----------------------");
+            System.out.println("Oluşturmak istediğiniz sınıf zaten var.");
+            return false;
+        }
+
+        grade_branch.mkdir();
+        return true;
+    }
+
+    private static boolean show_class()
+    {
+        Scanner scan = new Scanner(System.in);
+
+        System.out.println("-----------------------");
+        System.out.print("Görüntülemek istediğiniz sınıf: ");
+        String grade = scan.nextLine();
+        System.out.print("Görüntülemek istediğiniz sınıfın şubesi: ");
+        String branch = scan.nextLine();
+
+        File grade_branch = new File("C:\\School\\Grades\\" + grade + "\\" + branch.toUpperCase());
+
+        if (!grade_branch.exists()) {
+            System.out.println("-----------------------");
+            System.out.println("Böyle bir sınıf bulunmamakta.");
+            return false;
+        }
+
+        String [] paths = grade_branch.list();
+
+        for (String path : paths) {
+            File file = new File("C:\\School\\Grades\\" + grade + "\\" + branch.toUpperCase() + "\\" + path + "\\" + "StudentInfos.txt");
+            try {
+                FileReader fileReader = new FileReader(file);
+                char[] charray = new char[(int) file.length()];
+                fileReader.read(charray);
+                String str = new String(charray);
+                System.out.println("-----------------------");
+                System.out.print(str.substring(str.indexOf("İsim"), str.indexOf("Şube:")));
+            }
+            catch (IOException ex) {
+                ex.getMessage();
+            }
+        }
+        return true;
+    }
+
+    private static boolean create_user()
+    {
+        Scanner scan  = new Scanner(System.in);
+        System.out.println("-----------------------");
+        System.out.print("Oluşturmak istediğiniz kullanıcının kullanıcı adı: ");
+        String username = scan.nextLine();
+        System.out.print("Oluşturmak istediğiniz kullanıcının kullanıcı numarası: ");
+        String user_no = scan.nextLine();
+
+        File file = new File("C:\\School\\Users\\" + username + "_" + user_no + ".txt");
+
+        if (file.exists()) {
+            System.out.println("-----------------------");
+            System.out.println("Böyle bir kullanıcı zaten var.");
+            return false;
+        }
+
+        System.out.print("Oluşturmak istediğiniz kullanıcının alanı: ");
+        String scope = scan.nextLine();
+
+        try {
+            FileWriter fileWriter = new FileWriter(file);
+
+            String claSs;
+            if (!scope.equals("Yönetici")) {
+                System.out.print("Oluşturmak istediğiniz kullanıcının yetkili olduğu sınıflar: ");
+                claSs = scan.nextLine();
+
+                fileWriter.write("İsim: " + username + "\n" +
+                                     "Kullanıcı numarası: " + user_no + "\n" +
+                                     "Alan: " + scope + "\n" +
+                                     "Sınıflar: " + claSs);
+
+                fileWriter.close();
+                return true;
+            }
+
+            fileWriter.write("İsime: " + username + "\n" +
+                                 "Kullanıcı numarası: " + user_no + "\n" +
+                                 "Alan: " + scope);
+
+            fileWriter.close();
+        }
+        catch (IOException ex) {
+            ex.getMessage();
+        }
+
+        return true;
+    }
+
+    private static boolean show_user()
+    {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("-----------------------");
+        System.out.print("Görüntülemek istediğiniz kullanıcının kullanıcı numarasını giriniz: ");
+        String user_no = scan.nextLine();
+
+        File doc = new File("C:\\School\\Users");
+        File[] paths = doc.listFiles();
+
+        for(File path:paths) {
+            if (path.getName().contains("_" + user_no)) {
+                System.out.println( path.getName());
+                try {
+                    File file = new File("C:\\School\\Users\\" + path.getName());
+                    FileReader fileReader = new FileReader(file);
+                    char [] chars = new char[(int) file.length()];
+                    fileReader.read(chars);
+                    String str = new String(chars);
+                    System.out.println("-----------------------");
+                    System.out.println(str);
+                    return true;
+                }
+                catch (IOException ex) {
+                    ex.getMessage();
+                }
+            }
+        }
+
+        System.out.println("-----------------------");
+        System.out.println("Kullanıcı bulunamadı.");
+        return false;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
