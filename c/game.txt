@@ -1,3 +1,9 @@
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+
+void delay(int number_of_seconds);
+
 const int x = 50;
 const int y = 42;
 
@@ -85,7 +91,7 @@ int main(void)
         }
         else {
             temp = map[tar_y][tar_x];
-            if(tar_y != des_y) {
+            if(tar_y != des_y || tar_x != des_x) {
                 if(temp == '+') {
                     temp = '-';
                 }
