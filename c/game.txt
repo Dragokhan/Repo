@@ -1,0 +1,103 @@
+const int x = 50;
+const int y = 42;
+
+const int vision_x = 15;
+const int vision_y = 5;
+
+int des_x = 2;
+int des_y = 2;
+
+int main(void)
+{
+    char map[y][x];
+
+    for(int i = 0; i < y; ++i) {
+        for(int k = 0; k < x; ++k) {
+            if(k == x - 1 || k == 0 || i == 0 || i == y - 1) {
+                map[i][k] = '$';
+            }
+            else if((k + i) % 2 != 0) {
+                map[i][k] = '+';
+            }
+            else {
+                map[i][k] = '-';
+            }
+        }
+    }
+
+    map[y - 2][x - 2] = 'H';
+    map[des_y][des_x] = 'O';
+
+
+    int tar_y = des_y;
+    int tar_x = des_x;
+
+    char temp;
+
+    int ans;
+    while(1) {
+        system("cls");
+        for(int i = des_y - (vision_y / 2 + 1); i < des_y + (vision_y / 2 + 1); ++i) {
+            for(int k = des_x - (vision_x / 2 + 1); k < des_x + (vision_x / 2 + 1); ++k) {
+                if(k >= 0 && k <= x - 1 && i >= 0 && i <= y - 1) {
+                    printf("%c", map[i][k]);
+                }
+            }
+            printf("\n");
+        }
+
+        printf("\n\n\n???: ");
+        scanf("%d", &ans);
+
+        if(ans == 0) {
+            system("cls");
+            printf("See you!\n");
+            break;
+        }
+
+        switch(ans) {
+        case 8:
+            --tar_y;
+            break;
+
+        case 2:
+            ++tar_y;
+            break;
+
+        case 4:
+            --tar_x;
+            break;
+
+        case 6:
+            ++tar_x;
+            break;
+        }
+
+        if(map[tar_y][tar_x] == '$') {
+            tar_x = des_x;
+            tar_y = des_y;
+            continue;
+        }
+        else if(map[tar_y][tar_x] == 'H') {
+            system("cls");
+            printf("You won! Congurulations.\n");
+            break;
+        }
+        else {
+            temp = map[tar_y][tar_x];
+            if(tar_y != des_y) {
+                if(temp == '+') {
+                    temp = '-';
+                }
+                else {
+                    temp = '+';
+                }
+            }
+            map[tar_y][tar_x] = map[des_y][des_x];
+            map[des_y][des_x] = temp;
+        }
+
+        des_x = tar_x;
+        des_y = tar_y;
+    }
+}
