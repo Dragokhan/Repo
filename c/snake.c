@@ -1,5 +1,5 @@
 /*
-	Oðuzhan ÇALIÞKAN
+	OÄŸuzhan Ã‡ALIÅžKAN
 	
 	18.04.23(11 pm) - 19.04.23(3 am)
 */
@@ -13,8 +13,8 @@
 #define COL 15 // min 10
 #define I_SNAKE_LEN 3
 
-#define FPS 2.5
-#define FPM 2
+#define FPS 3 // if its slow increase it and vice versa
+#define FPM 0.5 // 1 / Move per frame
 
 char gameBoard[ROW][COL];
 
@@ -48,6 +48,7 @@ void putTheSnake();
 void addApple();
 int mainMenu();
 void gameOverMenu();
+void freeSnake();
 
 int point = 0;
 
@@ -58,24 +59,26 @@ int main() {
 
 	addApple(); //first apple might spawn on the snake	
 	initialGB();
-	initialSnake();
 
 	sleep(1);
 	
 	while(1) {
+		system("color f");
+		
 		char ans = mainMenu();
 		if(!ans) break;
 		
 		gameState = 1;
 		
+		initialSnake();
 		while(gameState) {
 			initialGB();
 			putTheSnake();
 			play();
 			if(!gameState) break; 
+			system("cls");
 			showGB();
 			sleep(1/FPS);
-			system("cls");
 		}
 		
 		gameOverMenu();
@@ -93,6 +96,8 @@ void play()  {
 		if(kbhit()) { order = getch(); }
 		fflush(stdin);
 		
+		
+		if(order != Up && order != Down && order != Left && order != Right) order = currentMove;
 		if(!(currentMove == Up && order == Down) && !(order == Up && currentMove == Down) && !(order==Right && currentMove==Left) && !(currentMove==Right && order==Left)) currentMove = order;
 		
 		orderTheNodes();
@@ -100,11 +105,11 @@ void play()  {
 		if(gameBoard[head->row][head->col] == 'o') {gameState = 0;}
 		
 		if(gameBoard[head->row][head->col] == '+') {
-			if(current->col + 1 <= COL - 1) {
-				add(current->row, current->col + 1);
+			if(current->row + 1 <= ROW - 1) {
+				add(current->row + 1, current->col);
 			}
 			else {
-				add(current->row+1, current->col);
+				add(current->row, current->col + 1);
 			}
 			
 			addApple();
@@ -119,6 +124,10 @@ void play()  {
 }
 
 void gameOverMenu() {
+	system("color c");
+	sleep(1.5);
+	system("PAUSE");
+	
 	system("cls");
 	
 	printf("GAME OVER!");
@@ -128,6 +137,9 @@ void gameOverMenu() {
 	sleep(1.5);
 	system("PAUSE");
 	point = 0;
+	currentMove = Left;
+	
+	freeSnake();
 }
 
 int mainMenu() {
@@ -173,7 +185,7 @@ void orderTheNodes() {
 	
 	if(currentMove == Up) {
 		
-		head->row = head->row > 0 ? (head->row - 1) : ROW;
+		head->row = head->row > 0 ? (head->row - 1) : ROW - 1;
 	}
 	else if(currentMove == Down) {
 		head->row = (head->row + 1) % ROW; 
@@ -182,13 +194,8 @@ void orderTheNodes() {
 		head->col = (head->col + 1) % COL;
 	}
 	else if(currentMove == Left) {
-		head->col = head->col > 0 ? (head->col - 1) : COL;
+		head->col = head->col > 0 ? (head->col - 1) : COL - 1;
 	}
-	
-	if((head->col > COL || head->col < 0) || (head->row > ROW || head->row < 0)) {
-		gameState = 0;
-	}
-	
 }
 
 void add(int row, int col) {
@@ -267,7 +274,7 @@ void showGB() {
 		printf("* ");
 	}
 	
-	printf("\n\n      Point: %d", point);
+	printf("\n\n      Point: %d\n\n", point);
 }
 
 void initialSnake() {
@@ -278,8 +285,15 @@ void initialSnake() {
 	}
 }
 
- 
-
+void freeSnake() {
+	struct node* temp = head;
+	
+	while(head != NULL) {
+		temp = temp->next;
+		free(head);
+		head = temp;
+	} 
+} 
 
 
 
